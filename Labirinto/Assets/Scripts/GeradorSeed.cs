@@ -8,9 +8,9 @@ public class GeradorSeed
 
 	public static int GerarNovaSeed()
     {
-		string currentNum = seed.Substring(posAtual++ % seed.Length, 1);
+		string novaSeed = seed.Substring(posAtual++ % seed.Length, 1);
 
-        //return int.Parse (currentNum); //gerar aleatórios com a seed key, para que possa ser gerado o mesmo labirinto mais de uma vez quando a seed for a mesma
+        //return int.Parse (novaSeed); //gerar aleatórios com a seed key, para que possa ser gerado o mesmo labirinto mais de uma vez quando a seed for a mesma
         return Random.Range(0, 5); //gerar sempre aleatório
 	}
 }

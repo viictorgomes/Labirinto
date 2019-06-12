@@ -2434,11 +2434,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7803212081162814945}
     m_Modifications:
-    - target: {fileID: 9146465293028550730, guid: 495bc3da9742b3f48aef10c0b7748c87,
-        type: 3}
-      propertyPath: m_Name
-      value: Knife
-      objectReference: {fileID: 0}
     - target: {fileID: 9143895834997237316, guid: 495bc3da9742b3f48aef10c0b7748c87,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2509,6 +2504,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 9146465293028550730, guid: 495bc3da9742b3f48aef10c0b7748c87,
+        type: 3}
+      propertyPath: m_Name
+      value: Knife
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 495bc3da9742b3f48aef10c0b7748c87, type: 3}
 --- !u!4 &8777159392248051425 stripped
@@ -2524,11 +2524,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7803182990543493259}
     m_Modifications:
-    - target: {fileID: 8050512070355701769, guid: 24302c6edd83b334c81061d6b8205797,
-        type: 3}
-      propertyPath: m_Name
-      value: Table Fork
-      objectReference: {fileID: 0}
     - target: {fileID: 8049548967635161921, guid: 24302c6edd83b334c81061d6b8205797,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2598,6 +2593,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8050512070355701769, guid: 24302c6edd83b334c81061d6b8205797,
+        type: 3}
+      propertyPath: m_Name
+      value: Table Fork
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 24302c6edd83b334c81061d6b8205797, type: 3}

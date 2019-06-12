@@ -5,12 +5,13 @@ public class LabirintoManager : MonoBehaviour
 {
 
 	public int Linhas, Colunas;
+
 	public GameObject Parede;
     public GameObject Piso;
-    private float Tamanho = 5.5f;
+    private float escalaGameObj = 5.5f;
 
     public GameObject queijoMesh; // modelo 3d (prefab) do queijo
-    public GameObject ratoMesh;// modelo 3d (prefab) do rato
+    public GameObject ratoMesh;   // modelo 3d (prefab) do rato
 
     public GameObject camera;
 
@@ -36,9 +37,10 @@ public class LabirintoManager : MonoBehaviour
         GerarLabirinto();
     }
 
+    //atualizar distancia do labirinto de acordo com o tamanho dele, para que sempre fique visivel no fundo do menu inicial
     public float CalcularAlturaCamera()
     {
-        //Calcular altura da camera
+        //calcular altura da camera
         var altura = 35;
         var alturaPorBloco = 7;
         if (Linhas > Colunas)
@@ -57,10 +59,10 @@ public class LabirintoManager : MonoBehaviour
     {
         if(matrizCelulas != null) DestruirLabirinto();
         
-        InicializarLabirinto();
+        InicializarLabirinto(); //Inicia a base do labirinto, em que todas as células estão fechadas por paredes em todas direções
 
         Labirinto huntAndKill = new HuntAndKill(matrizCelulas);
-        huntAndKill.CriarLabirinto();
+        huntAndKill.CriarLabirinto(); //Executa o HuntAndKill para dar forma ao labirinto, quebrando paredes e formando o labirinto perfeito(todas células acessíveis)
         
         var camPos = matrizCelulas[(Linhas/2), (Colunas/2)].piso.transform.position;
 
@@ -69,12 +71,14 @@ public class LabirintoManager : MonoBehaviour
         PosicionarLabirinto();
     }
 
+    //assim que o labirinto é gerado, ele é posicionado a partir do centro do primeiro piso
+    //aqui executamos uma correção para que todos labirintos sempre fiquem alinhados com o grid posteriormente
     public void PosicionarLabirinto()
     {
-        var labSizeX = 5.5f * Linhas - (5.5f);
-        var labSizeY = 5.5f * Colunas - (5.5f);
+        var tamanhoLabirintoX = escalaGameObj * Linhas - (escalaGameObj);
+        var tamanhoLabirintoY = escalaGameObj * Colunas - (escalaGameObj);
 
-        Vector3 fixedPos = new Vector3(-(labSizeX / 2), 0, -(labSizeY / 2));
+        Vector3 fixedPos = new Vector3(-(tamanhoLabirintoX / 2), 0, -(tamanhoLabirintoY / 2));
         Labirinto.transform.localPosition = fixedPos;
     }
 
@@ -107,62 +111,66 @@ public class LabirintoManager : MonoBehaviour
 
 	private void InicializarLabirinto()
     {
-
 		matrizCelulas = new Celula[Linhas,Colunas];
 
-        for (int r = 0; r < Linhas; r++)
+        for (int l = 0; l < Linhas; l++)
         {
             for (int c = 0; c < Colunas; c++)
             {
-				matrizCelulas [r, c] = new Celula();
+				matrizCelulas [l, c] = new Celula();
 
-                matrizCelulas[r, c].piso = Instantiate(Piso, new Vector3 (r*Tamanho, -0.25f, c*Tamanho), Quaternion.identity) as GameObject;
-				matrizCelulas[r, c].piso.name = "Floor " + r + "," + c;
-				matrizCelulas[r, c].piso.transform.Rotate(Vector3.right, 90f);
-                matrizCelulas[r, c].piso.transform.SetParent(Labirinto);
-                matrizCelulas[r, c].piso.tag = "Floor";
-                matrizCelulas[r, c].piso.GetComponent<Renderer>().material.color = new Color(0.9f, 0.9f, 0.9f);
 
+                //adicionar os PISOS em todas as posições da matriz
+                matrizCelulas[l, c].piso = Instantiate(Piso, new Vector3 (l*escalaGameObj, -0.25f, c*escalaGameObj), Quaternion.identity) as GameObject;
+				matrizCelulas[l, c].piso.name = "Piso " + l + "," + c;
+				matrizCelulas[l, c].piso.transform.Rotate(Vector3.right, 90f);
+                matrizCelulas[l, c].piso.transform.SetParent(Labirinto);
+                matrizCelulas[l, c].piso.tag = "Piso";
+                matrizCelulas[l, c].piso.GetComponent<Renderer>().material.color = new Color(0.9f, 0.9f, 0.9f);
+
+                //Preencher todo o labirinto inicial
+                //fazendo as paredes externas e preenchendo todas as células
+                //com paredes fechando toda célula por completo
 
                 if (c == 0)
                 {
-					matrizCelulas[r, c].paredeOeste = Instantiate(Parede, new Vector3 (r*Tamanho, 0.8f, (c*Tamanho) - (Tamanho/2f)), Quaternion.identity) as GameObject;
-					matrizCelulas[r, c].paredeOeste.name = "West Wall " + r + "," + c;
-                    matrizCelulas[r, c].paredeOeste.tag = "Wall";
-                    matrizCelulas[r, c].paredeOeste.layer = LayerMask.NameToLayer("Wall");
-                    matrizCelulas[r, c].paredeOeste.GetComponent<Renderer>().material.SetColor("_Color", new Vector4(0.05f, 0.05f, 0.05f));
-                    matrizCelulas[r, c].paredeOeste.GetComponent<Renderer>().material.SetTexture("wall", default);
-                    matrizCelulas[r, c].paredeOeste.transform.SetParent(Labirinto);
+					matrizCelulas[l, c].paredeOeste = Instantiate(Parede, new Vector3 (l*escalaGameObj, 0.8f, (c*escalaGameObj) - (escalaGameObj/2f)), Quaternion.identity) as GameObject;
+					matrizCelulas[l, c].paredeOeste.name = "Parede (Oeste) " + l + "," + c;
+                    matrizCelulas[l, c].paredeOeste.tag = "Parede";
+                    matrizCelulas[l, c].paredeOeste.layer = LayerMask.NameToLayer("Parede");
+                    matrizCelulas[l, c].paredeOeste.GetComponent<Renderer>().material.SetColor("_Color", new Vector4(0.05f, 0.05f, 0.05f));
+                    matrizCelulas[l, c].paredeOeste.GetComponent<Renderer>().material.SetTexture("wall", default);
+                    matrizCelulas[l, c].paredeOeste.transform.SetParent(Labirinto);
                 }
                 
-				matrizCelulas[r, c].paredeLeste = Instantiate(Parede, new Vector3 (r*Tamanho, 0.8f, (c*Tamanho) + (Tamanho/2f)), Quaternion.identity) as GameObject;
-				matrizCelulas[r, c].paredeLeste.name = "East Wall " + r + "," + c;
-                matrizCelulas[r, c].paredeLeste.tag = "Wall";
-                matrizCelulas[r, c].paredeLeste.layer = LayerMask.NameToLayer("Wall");
-                matrizCelulas[r, c].paredeLeste.GetComponent<Renderer>().material.SetColor("_Color", new Vector4(0.05f, 0.05f, 0.05f));
-                matrizCelulas[r, c].paredeLeste.GetComponent<Renderer>().material.SetTexture("wall", default);
-                matrizCelulas[r, c].paredeLeste.transform.SetParent(Labirinto);
+				matrizCelulas[l, c].paredeLeste = Instantiate(Parede, new Vector3 (l*escalaGameObj, 0.8f, (c*escalaGameObj) + (escalaGameObj/2f)), Quaternion.identity) as GameObject;
+				matrizCelulas[l, c].paredeLeste.name = "Parede (Leste) " + l + "," + c;
+                matrizCelulas[l, c].paredeLeste.tag = "Parede";
+                matrizCelulas[l, c].paredeLeste.layer = LayerMask.NameToLayer("Parede");
+                matrizCelulas[l, c].paredeLeste.GetComponent<Renderer>().material.SetColor("_Color", new Vector4(0.05f, 0.05f, 0.05f));
+                matrizCelulas[l, c].paredeLeste.GetComponent<Renderer>().material.SetTexture("wall", default);
+                matrizCelulas[l, c].paredeLeste.transform.SetParent(Labirinto);
 
-                if (r == 0)
+                if (l == 0)
                 {
-					matrizCelulas[r, c].paredeNorte = Instantiate(Parede, new Vector3 ((r*Tamanho) - (Tamanho/2f), 0.8f, c*Tamanho), Quaternion.identity) as GameObject;
-					matrizCelulas[r, c].paredeNorte.name = "North Wall " + r + "," + c;
-					matrizCelulas[r, c].paredeNorte.transform.Rotate (Vector3.up * 90f);
-                    matrizCelulas[r, c].paredeNorte.tag = "Wall";
-                    matrizCelulas[r, c].paredeNorte.layer = LayerMask.NameToLayer("Wall");
-                    matrizCelulas[r, c].paredeNorte.GetComponent<Renderer>().material.SetColor("_Color", new Vector4(0.05f, 0.05f, 0.05f));
-                    matrizCelulas[r, c].paredeNorte.GetComponent<Renderer>().material.SetTexture("wall", default);
-                    matrizCelulas[r, c].paredeNorte.transform.SetParent(Labirinto);
+					matrizCelulas[l, c].paredeNorte = Instantiate(Parede, new Vector3 ((l*escalaGameObj) - (escalaGameObj/2f), 0.8f, c*escalaGameObj), Quaternion.identity) as GameObject;
+					matrizCelulas[l, c].paredeNorte.name = "Parede (Norte) " + l + "," + c;
+					matrizCelulas[l, c].paredeNorte.transform.Rotate (Vector3.up * 90f);
+                    matrizCelulas[l, c].paredeNorte.tag = "Parede";
+                    matrizCelulas[l, c].paredeNorte.layer = LayerMask.NameToLayer("Parede");
+                    matrizCelulas[l, c].paredeNorte.GetComponent<Renderer>().material.SetColor("_Color", new Vector4(0.05f, 0.05f, 0.05f));
+                    matrizCelulas[l, c].paredeNorte.GetComponent<Renderer>().material.SetTexture("wall", default);
+                    matrizCelulas[l, c].paredeNorte.transform.SetParent(Labirinto);
                 }
                 
-				matrizCelulas[r, c].paredeSul = Instantiate(Parede, new Vector3 ((r*Tamanho) + (Tamanho/2f), 0.8f, c*Tamanho), Quaternion.identity) as GameObject;
-				matrizCelulas[r, c].paredeSul.name = "South Wall " + r + "," + c;
-                matrizCelulas[r, c].paredeSul.transform.Rotate (Vector3.up * 90f);
-                matrizCelulas[r, c].paredeSul.tag = "Wall";
-                matrizCelulas[r, c].paredeSul.layer = LayerMask.NameToLayer("Wall");
-                matrizCelulas[r, c].paredeSul.GetComponent<Renderer>().material.SetColor("_Color", new Vector4(0.05f, 0.05f, 0.05f));
-                matrizCelulas[r, c].paredeSul.GetComponent<Renderer>().material.SetTexture("wall", default);
-                matrizCelulas[r, c].paredeSul.transform.SetParent(Labirinto);
+				matrizCelulas[l, c].paredeSul = Instantiate(Parede, new Vector3 ((l*escalaGameObj) + (escalaGameObj/2f), 0.8f, c*escalaGameObj), Quaternion.identity) as GameObject;
+				matrizCelulas[l, c].paredeSul.name = "Parede (Sul) " + l + "," + c;
+                matrizCelulas[l, c].paredeSul.transform.Rotate (Vector3.up * 90f);
+                matrizCelulas[l, c].paredeSul.tag = "Parede";
+                matrizCelulas[l, c].paredeSul.layer = LayerMask.NameToLayer("Parede");
+                matrizCelulas[l, c].paredeSul.GetComponent<Renderer>().material.SetColor("_Color", new Vector4(0.05f, 0.05f, 0.05f));
+                matrizCelulas[l, c].paredeSul.GetComponent<Renderer>().material.SetTexture("wall", default);
+                matrizCelulas[l, c].paredeSul.transform.SetParent(Labirinto);
             }
         }
     }
@@ -185,22 +193,22 @@ public class LabirintoManager : MonoBehaviour
         var queijoTransformPos = queijoPos.piso.transform.position;
 
         queijoPickup = Instantiate(queijoMesh, new Vector3(queijoTransformPos.x, 0.25f, queijoTransformPos.z), Quaternion.identity) as GameObject;
-        queijoPickup.name = $"Queijo {queijoPos.piso.name.Substring(6, 3)}";
+        queijoPickup.name = $"Queijo {queijoPos.piso.name.Substring(5, 3)}"; //fazer com o nome do gameObj do queijo seja "Queijo" + a posição do chão em que ele se encontra
     }
 
+    //gerar uma posição aleatória do labirinto para spawnar o queijo
     private Celula GerarQueijoPos()
     {
         var ratoPos = matrizCelulas[0, 0].piso.transform.position;
 
         while (true)
         {
-            int p1 = Random.Range(0, Linhas);
+            int p1 = Random.Range(0, Linhas);//range começando do 0 pra frente para que não gere o queijo na posição inicial(0,0) que é onde o rato nasce
             int p2 = Random.Range(0, Colunas);
             var queijoPos = matrizCelulas[p1, p2].piso.transform.position;
             
             if(ratoPos != queijoPos) return matrizCelulas[p1, p2];
         }
-        
     }
 
 }

@@ -4,13 +4,13 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Floor
-  - Wall
   - Rato
   - Queijo
   - Labirinto
   - GridLoader
   - RatoCam
+  - Piso
+  - Parede
   layers:
   - Default
   - TransparentFX
@@ -20,7 +20,7 @@ TagManager:
   - UI
   - 
   - 
-  - Wall
+  - Parede
   - 
   - 
   - 

@@ -9,7 +9,7 @@ public class Interface : MonoBehaviour
     
     void Start()
     {
-        configMenu.SetActive(false);
+        configMenu.SetActive(false); //esconder o menu "configurações" quando iniciar a interface
     }
     
     void Update()

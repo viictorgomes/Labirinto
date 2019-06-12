@@ -5,7 +5,7 @@ using UnityEngine;
 public class Node
 {
     public bool bAcessivel; // false caso este node esteja na mesma posição de uma parede
-    public Vector3 vPos; // posição dentro do mundo 3d
+    public Vector3 vPos;    // posição dentro do mundo 3d
 
     public int gridX;
     public int gridY;

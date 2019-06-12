@@ -37,7 +37,8 @@ public class HuntAndKill : Labirinto
     {
 		matrizCelulas [linhaAtual, colunaAtual].visitada = true;
 
-		while (! scanCompleto) {
+		while (! scanCompleto)
+        {
 			Kill(); // Passo 2: começa a caminhada aleatória
 
 			Hunt(); // Passo 3: entra no modo hunt e começa a buscar células não visitadas que sejam adjacentes a células visitadas
@@ -49,30 +50,30 @@ public class HuntAndKill : Labirinto
     {
 		while (RotaDisponivel (linhaAtual, colunaAtual))
         {
-			int direction = GeradorSeed.GerarNovaSeed ();
+			int direcao = GeradorSeed.GerarNovaSeed ();
 
-			if (direction == 1 && CelulaDisponivel (linhaAtual - 1, colunaAtual))
+			if (direcao == Direcao.Norte && CelulaDisponivel (linhaAtual - 1, colunaAtual))
             {
 				// norte
 				DestruirParedeCasoExista (matrizCelulas [linhaAtual, colunaAtual].paredeNorte);
 				DestruirParedeCasoExista (matrizCelulas [linhaAtual - 1, colunaAtual].paredeSul);
 				linhaAtual--;
 			}
-            else if (direction == 2 && CelulaDisponivel (linhaAtual + 1, colunaAtual))
+            else if (direcao == Direcao.Sul && CelulaDisponivel (linhaAtual + 1, colunaAtual))
             {
 				// sul
 				DestruirParedeCasoExista (matrizCelulas [linhaAtual, colunaAtual].paredeSul);
 				DestruirParedeCasoExista (matrizCelulas [linhaAtual + 1, colunaAtual].paredeNorte);
 				linhaAtual++;
 			}
-            else if (direction == 3 && CelulaDisponivel (linhaAtual, colunaAtual + 1))
+            else if (direcao == Direcao.Leste && CelulaDisponivel (linhaAtual, colunaAtual + 1))
             {
                 // leste
                 DestruirParedeCasoExista(matrizCelulas [linhaAtual, colunaAtual].paredeLeste);
 				DestruirParedeCasoExista (matrizCelulas [linhaAtual, colunaAtual + 1].paredeOeste);
 				colunaAtual++;
 			}
-            else if (direction == 4 && CelulaDisponivel (linhaAtual, colunaAtual - 1))
+            else if (direcao == Direcao.Oeste && CelulaDisponivel (linhaAtual, colunaAtual - 1))
             {
 				// oeste
 				DestruirParedeCasoExista (matrizCelulas [linhaAtual, colunaAtual].paredeOeste);
@@ -88,14 +89,14 @@ public class HuntAndKill : Labirinto
     {
 		scanCompleto = true; // primeiro setamos como true, e depois tentamos provar que seja false em baixo
 
-		for (int r = 0; r < linhas; r++)
+		for (int l = 0; l < linhas; l++)
         {
 			for (int c = 0; c < colunas; c++)
             {
-				if (!matrizCelulas [r, c].visitada && CelulaContemCelulaAdjacente(r,c))
+				if (!matrizCelulas [l, c].visitada && CelulaContemCelulaAdjacente(l,c))
                 {
 					scanCompleto = false; // continuar o scan
-					linhaAtual = r;
+					linhaAtual = l;
 					colunaAtual = c;
 
 					DestruirParedeAdjacente (linhaAtual, colunaAtual);
@@ -157,34 +158,34 @@ public class HuntAndKill : Labirinto
 
 	private bool CelulaContemCelulaAdjacente(int linha, int coluna)
     {
-		int visitedCells = 0;
+		int celulasVisitadas = 0;
 
         // olhar 1 linha para cima(norte) se estivermos na linha 1 ou maior
         if (linha > 0 && matrizCelulas [linha - 1, coluna].visitada)
         {
-			visitedCells++;
+			celulasVisitadas++;
 		}
 
         // olhar uma linha abaixo(sul) se formos a penultima linha (ou menor)
         if (linha < (linhas-2) && matrizCelulas [linha + 1, coluna].visitada)
         {
-			visitedCells++;
+			celulasVisitadas++;
 		}
 
         // olhar uma linha a esquerda(oeste) se estivermos na coluna 1 ou maior
         if (coluna > 0 && matrizCelulas [linha, coluna - 1].visitada)
         {
-			visitedCells++;
+			celulasVisitadas++;
 		}
 
         // olhar uma linha à direita(leste) se formos a penultima coluna (ou menor)
         if (coluna < (colunas-2) && matrizCelulas [linha, coluna + 1].visitada)
         {
-			visitedCells++;
+			celulasVisitadas++;
 		}
 
         // retorna true se houver alguma célula visitada adjacente a esta
-        return visitedCells > 0;
+        return celulasVisitadas > 0;
 	}
 
 	private void DestruirParedeAdjacente(int linha, int coluna)
@@ -195,25 +196,25 @@ public class HuntAndKill : Labirinto
         {
 			int direcao = GeradorSeed.GerarNovaSeed();
 
-			if (direcao == 1 && linha > 0 && matrizCelulas [linha - 1, coluna].visitada)
+			if (direcao == Direcao.Norte && linha > 0 && matrizCelulas [linha - 1, coluna].visitada)
             {
 				DestruirParedeCasoExista (matrizCelulas [linha, coluna].paredeNorte);
 				DestruirParedeCasoExista (matrizCelulas [linha - 1, coluna].paredeSul);
 				paredeDestruida = true;
 			}
-            else if (direcao == 2 && linha < (linhas-2) && matrizCelulas [linha + 1, coluna].visitada)
+            else if (direcao == Direcao.Sul && linha < (linhas-2) && matrizCelulas [linha + 1, coluna].visitada)
             {
 				DestruirParedeCasoExista (matrizCelulas [linha, coluna].paredeSul);
 				DestruirParedeCasoExista (matrizCelulas [linha + 1, coluna].paredeNorte);
 				paredeDestruida = true;
 			}
-            else if (direcao == 3 && coluna > 0 && matrizCelulas [linha, coluna-1].visitada)
+            else if (direcao == Direcao.Leste && coluna > 0 && matrizCelulas [linha, coluna-1].visitada)
             {
 				DestruirParedeCasoExista (matrizCelulas [linha, coluna].paredeOeste);
 				DestruirParedeCasoExista (matrizCelulas [linha, coluna-1].paredeLeste);
 				paredeDestruida = true;
 			}
-            else if (direcao == 4 && coluna < (colunas-2) && matrizCelulas [linha, coluna+1].visitada)
+            else if (direcao == Direcao.Oeste && coluna < (colunas-2) && matrizCelulas [linha, coluna+1].visitada)
             {
 				DestruirParedeCasoExista (matrizCelulas [linha, coluna].paredeLeste);
 				DestruirParedeCasoExista (matrizCelulas [linha, coluna+1].paredeOeste);
@@ -224,3 +225,12 @@ public class HuntAndKill : Labirinto
 	}
 
 }
+
+public class Direcao
+{
+    public const int Norte = 1;
+    public const int Sul = 2;
+    public const int Leste = 3;
+    public const int Oeste = 4;
+}
+

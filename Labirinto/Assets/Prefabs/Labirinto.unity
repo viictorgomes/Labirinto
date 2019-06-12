@@ -949,7 +949,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61ad175ff27a6d54b94ae1fb5c35fa77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inacessivelMask:
+  paredeLayerMask:
     serializedVersion: 2
     m_Bits: 256
   mazeLoader: {fileID: 1062459225}

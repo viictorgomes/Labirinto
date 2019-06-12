@@ -6,8 +6,9 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
-    public LayerMask inacessivelMask;
-
+    public LayerMask paredeLayerMask; //layermask é um atributo que pode ser aplicado em GameObjects,
+                                      //neste caso, para definir que um gameObj Parede tenha a layer paredeLayerMask
+                                      
     private Vector2 tamanhoGridMundo;
     public Node[,] gridArray;
 
@@ -16,6 +17,8 @@ public class Grid : MonoBehaviour
 
     private GameObject rato;
     private GameObject queijo;
+
+    private float escalaGameObj = 5.5f;
 
     public bool mostrarGrid = false;
 
@@ -36,14 +39,15 @@ public class Grid : MonoBehaviour
         if (gridArray != null) gridArray = null;
     }
 
+    //calcular o tamanho do grid no mundo 3d em que vai ser preenchido com nodes posteriormente
     void CalcularGrid()
     {
         tamanhoGridX = Mathf.RoundToInt(tamanhoGridMundo.x / diametroNode);
         tamanhoGridY = Mathf.RoundToInt(tamanhoGridMundo.y / diametroNode);
 
         var maze = mazeLoader.GetComponent<LabirintoManager>();
-        tamanhoGridMundo.x = 5.5f * maze.Linhas;
-        tamanhoGridMundo.y = 5.5f * maze.Colunas;
+        tamanhoGridMundo.x = escalaGameObj * maze.Linhas;
+        tamanhoGridMundo.y = escalaGameObj * maze.Colunas;
     }
 
     public void CriarGrid()
@@ -56,24 +60,28 @@ public class Grid : MonoBehaviour
 
         var maze = mazeLoader.GetComponent<LabirintoManager>();
 
-        Vector3 fixPos = new Vector3(0,0,0);
+        Vector3 fixPos = new Vector3(0,0,0); //resetar a posição
 
+        //x e y são linhas e colunas da matriz do labirinto
         for (int x = 0; x < tamanhoGridX; x++)
         {
             for (int y = 0; y < tamanhoGridY; y++)
             {
                 Vector3 worldPoint = posInicial + Vector3.right * (x * diametroNode + tamanhoNode) + Vector3.forward * (y * diametroNode + tamanhoNode);//obter a posição no mundo(v3) do canto esquerdo inferior
                 
-                bool parede = true;
+                //primeiro setamos o padrão como acessível, e depois caso encontre parede no teste abaixo, setamos como não acessível.
+                bool acessivel = true;
                 fixPos = worldPoint;
 
-                //realizar o teste de colisão pra determinar se é uma parede ou não.
-                if (Physics.CheckSphere(worldPoint, tamanhoNode, inacessivelMask))
+                //realizar o teste de colisão pra determinar se é um node acessível ou não
+                //confere se nesta posição(worldPoint) tem um node em que seu tamanho entre em colisão com algum gameObject que tenha a layer paredeLayerMask
+                if (Physics.CheckSphere(worldPoint, tamanhoNode, paredeLayerMask))
                 {
-                    parede = false;
+                    //caso exista colisão, este será um node não acessível
+                    acessivel = false;
                 }
 
-                gridArray[x, y] = new Node(parede, worldPoint, x, y); //cria um novo node no array
+                gridArray[x, y] = new Node(acessivel, worldPoint, x, y); //cria um novo node no array
             }
         }
     }
@@ -101,8 +109,7 @@ public class Grid : MonoBehaviour
                 }
             }
         }
-
-        else
+        else //não permitir diagonais, permitir apenas cima/baixo/direita/esquerda
         {
             int checkX;//usado pra verificar se a posição está dentro do alcance da matriz
             int checkY;
@@ -155,7 +162,7 @@ public class Grid : MonoBehaviour
         return ListaVizinhos; //retorna a lista de vizinhos
     }
     
-    public Node ObterNodeByPos(Vector3 worldPosition)
+    public Node ObterNodeByPos(Vector3 worldPosition) //obter um determinado node através de uma coordenada do mundo 3d
     {
         //medir porcentagem do grid de acordo com a posição do v3
         float percentX = (worldPosition.x + tamanhoGridMundo.x / 2) / tamanhoGridMundo.x;
